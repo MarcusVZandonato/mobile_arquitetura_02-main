@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:mobile_arquitetura_02/data/datasources/product_cache_datasource.dart';
 import 'package:mobile_arquitetura_02/data/datasources/product_remote_datasource.dart';
 import 'package:mobile_arquitetura_02/data/repositories/product_repository_impl.dart';
-import 'package:mobile_arquitetura_02/presentation/pages/product_page.dart';
+import 'package:mobile_arquitetura_02/presentation/pages/home_page.dart';
 import 'package:mobile_arquitetura_02/presentation/viewmodels/product_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -22,11 +22,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => ProductViewmodel(repository),
+      create: (_) => ProductViewmodel(repository)..loadProducts(),
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Products',
-        home: ProductPage(),
+        home: HomePage(),
       ),
     );
   }

@@ -1,4 +1,4 @@
-import 'package:mobile_arquitetura_1/domain/entities/product.dart';
+import 'package:mobile_arquitetura_02/domain/entities/product.dart';
 
 class ProductState {
   final bool isLoading;

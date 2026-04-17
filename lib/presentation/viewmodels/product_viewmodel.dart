@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/cupertino.dart';
+import 'package:mobile_arquitetura_02/core/errors/failure.dart';
 import 'package:mobile_arquitetura_02/domain/entities/product.dart';
 import 'package:mobile_arquitetura_02/domain/repositories/product_repository.dart';
 
@@ -33,10 +34,15 @@ class ProductViewmodel extends ChangeNotifier {
     notifyListeners();
     try {
       _products = await repository.getProducts();
-      notifyListeners();
+    } on OfflineFailure catch (e) {
+      _error = e.message;
+      if (e.cachedData != null) {
+        _products = e.cachedData!;
+      }
+    } on Failure catch (e) {
+      _error = e.message;
     } catch (e) {
-      _error = e.toString();
-      notifyListeners();
+      _error = "Erro inesperado: $e";
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -63,6 +69,54 @@ class ProductViewmodel extends ChangeNotifier {
       }
     } catch (e) {
       _error = e.toString();
+      notifyListeners();
+    }
+  }
+
+  Future<void> addProduct(Product product) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+    try {
+      final newProduct = await repository.addProduct(product);
+      _products = [..._products, newProduct];
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateProduct(Product product) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+    try {
+      final updatedProduct = await repository.updateProduct(product);
+      final index = _products.indexWhere((p) => p.id == product.id);
+      if (index != -1) {
+        _products[index] = updatedProduct;
+      }
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteProduct(int id) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+    try {
+      await repository.deleteProduct(id);
+      _products.removeWhere((p) => p.id == id);
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
       notifyListeners();
     }
   }
