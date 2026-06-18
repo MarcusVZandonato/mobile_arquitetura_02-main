@@ -10,7 +10,7 @@ class ProductRemoteDatasource {
 
   Future<List<ProductModel>> getProducts() async {
     final response = await client.get(
-      Uri.parse('https://fakestoreapi.com/products'),
+      Uri.parse('https://dummyjson.com/products'),
     );
 
     if (response.statusCode != 200) {
@@ -18,15 +18,16 @@ class ProductRemoteDatasource {
     }
 
     final responseBody = utf8.decode(response.bodyBytes);
-    final data = jsonDecode(responseBody) as List;
-    return data
+    final data = jsonDecode(responseBody) as Map<String, dynamic>;
+    final products = data['products'] as List;
+    return products
         .map((json) => ProductModel.fromJson(json as Map<String, dynamic>))
         .toList();
   }
 
   Future<ProductModel> addProduct(ProductModel product) async {
     final response = await client.post(
-      Uri.parse('https://fakestoreapi.com/products'),
+      Uri.parse('https://dummyjson.com/products/add'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(product.toJson()),
     );
@@ -42,7 +43,7 @@ class ProductRemoteDatasource {
 
   Future<ProductModel> updateProduct(ProductModel product) async {
     final response = await client.put(
-      Uri.parse('https://fakestoreapi.com/products/${product.id}'),
+      Uri.parse('https://dummyjson.com/products/${product.id}'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(product.toJson()),
     );
@@ -53,13 +54,12 @@ class ProductRemoteDatasource {
 
     final responseBody = utf8.decode(response.bodyBytes);
     final json = jsonDecode(responseBody);
-    // FakeStoreAPI just returns the object with update, might need mapping
     return ProductModel.fromJson(json as Map<String, dynamic>);
   }
 
   Future<void> deleteProduct(int id) async {
     final response = await client.delete(
-      Uri.parse('https://fakestoreapi.com/products/$id'),
+      Uri.parse('https://dummyjson.com/products/$id'),
     );
 
     if (response.statusCode != 200) {

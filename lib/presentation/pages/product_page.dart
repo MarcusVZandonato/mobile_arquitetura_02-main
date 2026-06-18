@@ -1,19 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_arquitetura_02/presentation/pages/login_page.dart';
 import 'package:mobile_arquitetura_02/presentation/pages/product_details_page.dart';
 import 'package:mobile_arquitetura_02/presentation/pages/product_form_page.dart';
+import 'package:mobile_arquitetura_02/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:mobile_arquitetura_02/presentation/viewmodels/product_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class ProductPage extends StatelessWidget {
   const ProductPage({super.key});
 
+  void _logout(BuildContext context) {
+    context.read<AuthViewmodel>().logout();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginPage()),
+      (_) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final viewmodel = context.watch<ProductViewmodel>();
+    final auth = context.watch<AuthViewmodel>();
+    final user = auth.user;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Products (${viewmodel.favoriteCount} favoritos)"),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Produtos'),
+            if (user != null)
+              Text(
+                'Olá, ${user.firstName}',
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+              ),
+          ],
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Center(
+              child: Text(
+                '${viewmodel.favoriteCount} ♥',
+                style: const TextStyle(fontSize: 14),
+              ),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Sair',
+            onPressed: () => _logout(context),
+          ),
+        ],
       ),
       body: ListenableBuilder(
         listenable: viewmodel,
@@ -89,22 +128,28 @@ class ProductPage extends StatelessWidget {
                               onPressed: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (_) => ProductFormPage(productToEdit: product)),
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        ProductFormPage(productToEdit: product),
+                                  ),
                                 );
                               },
                             ),
                             IconButton(
                               icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => viewmodel.deleteProduct(product.id),
+                              onPressed: () =>
+                                  viewmodel.deleteProduct(product.id),
                             ),
                             IconButton(
                               icon: Icon(
                                 product.isFavorited
                                     ? Icons.favorite
                                     : Icons.favorite_border,
-                                color: product.isFavorited ? Colors.green : null,
+                                color:
+                                    product.isFavorited ? Colors.green : null,
                               ),
-                              onPressed: () => viewmodel.toggleFavorite(product.id),
+                              onPressed: () =>
+                                  viewmodel.toggleFavorite(product.id),
                             ),
                           ],
                         ),
@@ -112,7 +157,8 @@ class ProductPage extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ProductDetailsPage(product: product),
+                              builder: (context) =>
+                                  ProductDetailsPage(product: product),
                             ),
                           );
                         },

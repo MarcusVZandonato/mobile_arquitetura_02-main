@@ -21,8 +21,8 @@ class ProductModel {
     return ProductModel(
       id: json["id"],
       title: json["title"],
-      price: json["price"].toDouble(),
-      image: json["image"],
+      price: (json["price"] as num).toDouble(),
+      image: json["thumbnail"] ?? json["image"] ?? "",
       description: json["description"] ?? "",
       isFavorited: false,
     );
@@ -31,8 +31,8 @@ class ProductModel {
     return ProductModel(
       id: json["id"],
       title: json["title"],
-      price: json["price"].toDouble(),
-      image: json["image"],
+      price: (json["price"] as num).toDouble(),
+      image: json["image"] ?? "",
       description: json["description"] ?? "",
       isFavorited: json["isFavorited"] ?? false,
     );
@@ -65,8 +65,8 @@ class ProductModel {
       "title": title,
       "price": price,
       "description": description,
-      "image": image,
-      "category": "electronic" 
+      "thumbnail": image,
+      "category": "general",
     };
   }
 
